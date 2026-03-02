@@ -294,6 +294,52 @@
     background: rgba(181,132,90,0.10);
     transform: scale(1.04);
   }
+
+  /* ── Bach Music Bar ── */
+  .music-bar {
+    display: flex; align-items: center; justify-content: center;
+    gap: 0.75rem; margin-bottom: 1.8rem;
+    padding: 0.65rem 1.2rem;
+    border-radius: 40px;
+    border: 1px solid rgba(181,132,90,0.18);
+    background: rgba(181,132,90,0.04);
+    width: fit-content; margin-left: auto; margin-right: auto;
+  }
+  .music-icon {
+    font-size: 0.95rem; opacity: 0.7;
+    animation: sway 2.4s ease-in-out infinite;
+  }
+  @keyframes sway {
+    0%,100% { transform: rotate(-8deg); }
+    50%      { transform: rotate(8deg); }
+  }
+  .music-icon.paused { animation: none; opacity: 0.35; }
+  .music-label {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 0.78rem; font-style: italic;
+    color: var(--ink-light); opacity: 0.55; letter-spacing: 0.04em;
+  }
+  .music-toggle {
+    display: flex; align-items: center; gap: 0.35rem;
+    padding: 0.28rem 0.85rem;
+    border-radius: 40px;
+    border: 1px solid rgba(181,132,90,0.35);
+    background: transparent; cursor: pointer;
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 0.78rem; color: #b5845a;
+    transition: all 0.25s ease; outline: none;
+  }
+  .music-toggle:hover { background: rgba(181,132,90,0.10); transform: scale(1.04); }
+  .music-toggle svg { width: 13px; height: 13px; fill: currentColor; flex-shrink: 0; }
+
+  /* ── Timelock Bach hint ── */
+  .timelock-music-hint {
+    margin-top: 1.2rem;
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 0.82rem; font-style: italic;
+    color: var(--ink-light); opacity: 0.45;
+    letter-spacing: 0.03em;
+  }
 </style>
 </head>
 <body>
@@ -304,12 +350,31 @@
     <div class="timelock-floral">🌸 ✦ 🌷 ✦ 🌸</div>
     <div class="timelock-envelope">💌</div>
     <div class="timelock-title">Ada sesuatu untukmu, Nalen</div>
-    <div class="timelock-sub" id="timelock-sub">Surat ini belum bisa dibuka sekarang.<br>Nalen bisa membukanya mulai jam</div>
-    <div class="timelock-time" id="timelock-time">14.45</div>
-    <div class="timelock-note" id="timelock-note">— tunggu sebentar ya, adek —</div>
+    <div class="timelock-sub" id="timelock-sub">Surat ini belum bisa dibuka sekarang.<br>Nalen bisa buka mulai jam</div>
+    <div class="timelock-time" id="timelock-time">19.45</div>
+    <div class="timelock-note" id="timelock-note">— tunggu sebentar ya, adek.<br>Kamu klik dulu deh simbol piano<br>dengerin Bach · Capriccio in B♭ Major —</div>
+    <div style="margin-top:1rem; position:relative; display:inline-block;" id="piano-wrap">
+      <button onclick="toggleBach()" onmouseenter="showTooltip()" onmouseleave="hideTooltip()" ontouchstart="showTooltip()" style="background:none;border:none;cursor:pointer;font-size:2rem;transition:transform 0.2s;" id="overlay-piano-btn" title="">🎹</button>
+      <div id="piano-tooltip" style="
+        display:none; position:absolute; bottom:calc(100% + 10px); left:50%; transform:translateX(-50%);
+        background:var(--paper); border:1px solid rgba(181,132,90,0.22);
+        box-shadow:0 4px 20px rgba(90,60,30,0.12);
+        border-radius:6px; padding:0.75rem 1rem; width:220px;
+        font-family:'Playfair Display',Georgia,serif; font-style:italic;
+        font-size:0.78rem; color:var(--ink-light); line-height:1.6;
+        text-align:center; pointer-events:none;
+        animation: fadeSlide 0.25s ease both;
+      ">
+        <div style="opacity:0.5; font-size:0.7rem; letter-spacing:0.08em; margin-bottom:0.3rem;">Call Me by Your Name</div>
+        <div style="opacity:0.8;">"Is it better to speak or to die?"</div>
+        <div style="margin-top:0.5rem; opacity:0.45; font-size:0.68rem;">— Elio memainkan ini untuk Oliver</div>
+        <div style="position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:8px;height:8px;background:var(--paper);border-right:1px solid rgba(181,132,90,0.22);border-bottom:1px solid rgba(181,132,90,0.22);transform:translateX(-50%) rotate(45deg);"></div>
+      </div>
+    </div>
     <button class="timelock-open-btn" id="timelock-open-btn" onclick="openLetter()">
       🌸 &nbsp;Buka Suratnya&nbsp; 🌸
     </button>
+    <div class="timelock-music-hint">🎹 &nbsp;Bach · Capriccio in B♭ Major · sedang mengalun untukmu</div>
   </div>
 </div>
 
@@ -323,9 +388,21 @@
 <audio id="audio-id" src="https://res.cloudinary.com/dvbztmtae/video/upload/v1772326652/Indonesia_vn.mp3"></audio>
 <audio id="audio-en" src="https://res.cloudinary.com/dvbztmtae/video/upload/v1772326639/Inggris_vn.mp3"></audio>
 <audio id="audio-fr" src="https://res.cloudinary.com/dvbztmtae/video/upload/v1772326649/Prancis_vn.mp3"></audio>
+<audio id="audio-bach" src="https://res.cloudinary.com/dvbztmtae/video/upload/v1772440951/bachcappricobflatmajor_scs8ui.mp3" loop></audio>
 
 <div class="wrapper">
   <div class="paper">
+
+    <!-- Bach Music Bar -->
+    <div class="music-bar" id="music-bar">
+      <span class="music-icon" id="music-icon">🎹</span>
+      <span class="music-label">Bach · Capriccio in B♭ Major</span>
+      <button class="music-toggle" id="music-toggle" onclick="toggleBach()">
+        <svg id="music-icon-pause" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        <svg id="music-icon-play" viewBox="0 0 24 24" style="display:none"><path d="M8 5v14l11-7z"/></svg>
+        <span id="music-toggle-label">Matikan</span>
+      </button>
+    </div>
 
     <!-- Language Tabs -->
     <div class="lang-tabs">
@@ -423,6 +500,12 @@
 
     <div class="floral-footer">🌸 ✦ 🌷 ✦ 🌸</div>
 
+    <div style="text-align:center; margin-top:1.8rem; padding-top:1.4rem; border-top:1px solid rgba(181,132,90,0.10);">
+      <div style="font-family:'Playfair Display',Georgia,serif; font-size:0.78rem; font-style:italic; color:var(--ink-light); opacity:0.45; letter-spacing:0.04em; line-height:1.8;">
+        Kamu klik dulu deh simbol piano 🎹<br>dengerin Bach · Capriccio in B♭ Major
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -515,13 +598,77 @@
     }
   }
 
+  function showTooltip() {
+    const t = document.getElementById('piano-tooltip');
+    if (t) t.style.display = 'block';
+  }
+  function hideTooltip() {
+    const t = document.getElementById('piano-tooltip');
+    if (t) t.style.display = 'none';
+  }
+
   // boot
   applyColors('en');
   progWrap.style.display = 'none';
 
-  // ── Time Lock ──
+  // ── Bach Background Music ──
+  const bachAudio = el('audio-bach');
+  bachAudio.volume = 0.72;
+  let bachPlaying = false;
+
+  function toggleBach() {
+    const overlayBtn = document.getElementById('overlay-piano-btn');
+    if (bachPlaying) {
+      fadeBach(bachAudio.volume, 0, function() { bachAudio.pause(); });
+      bachPlaying = false;
+      el('music-icon').classList.add('paused');
+      el('music-icon-pause').style.display = 'none';
+      el('music-icon-play').style.display  = 'block';
+      el('music-toggle-label').textContent = 'Mainkan';
+      if (overlayBtn) overlayBtn.style.opacity = '0.3';
+    } else {
+      bachAudio.play();
+      fadeBach(0, 0.72, null);
+      bachPlaying = true;
+      el('music-icon').classList.remove('paused');
+      el('music-icon-pause').style.display = 'block';
+      el('music-icon-play').style.display  = 'none';
+      el('music-toggle-label').textContent = 'Matikan';
+      if (overlayBtn) overlayBtn.style.opacity = '1';
+    }
+  }
+
+  function fadeBach(from, to, cb) {
+    bachAudio.volume = from;
+    const step = (to - from) / 30;
+    let count = 0;
+    const t = setInterval(function() {
+      count++;
+      bachAudio.volume = Math.min(Math.max(from + step * count, 0), 0.72);
+      if (count >= 30) { clearInterval(t); if (cb) cb(); }
+    }, 30);
+  }
+
+  function startBach() {
+    bachAudio.volume = 0;
+    bachAudio.play().then(function() {
+      fadeBach(0, 0.72, null);
+      bachPlaying = true;
+    }).catch(function() {
+      // Autoplay blocked — set up one-time user gesture handler
+      document.addEventListener('click', function _start() {
+        bachAudio.play().then(function() {
+          fadeBach(0, 0.72, null);
+          bachPlaying = true;
+        });
+        document.removeEventListener('click', _start);
+      }, { once: true });
+    });
+  }
+
+
   // Edit dua baris ini untuk mengubah waktu buka:
-  const UNLOCK_HOUR   = 14;
+  const UNLOCK_HOUR   = 19;
   const UNLOCK_MINUTE = 45;
 
   // Update tampilan jam di overlay secara otomatis
@@ -548,19 +695,23 @@
     setTimeout(function() {
       overlay.style.display = 'none';
       document.querySelector('.wrapper').style.visibility = 'visible';
+      // Start Bach when letter opens (if not already playing)
+      if (!bachPlaying) startBach();
     }, 900);
   }
 
   (function() {
     if (isUnlocked()) {
-      // Sudah waktunya — tampilkan overlay dengan tombol buka
       document.getElementById('timelock-overlay').style.display = 'flex';
       document.querySelector('.wrapper').style.visibility = 'hidden';
       showReadyState();
+      // Play Bach on the overlay page too
+      startBach();
     } else {
-      // Belum waktunya — tampilkan overlay, polling sampai waktunya
       document.getElementById('timelock-overlay').style.display = 'flex';
       document.querySelector('.wrapper').style.visibility = 'hidden';
+      // Play Bach while waiting
+      startBach();
 
       const check = setInterval(function() {
         if (isUnlocked()) {
