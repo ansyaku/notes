@@ -275,6 +275,25 @@
     font-size: 0.82rem; font-style: italic;
     color: var(--ink-light); opacity: 0.4;
   }
+  .timelock-open-btn {
+    display: none;
+    margin-top: 2rem;
+    padding: 0.65rem 2rem;
+    border-radius: 40px;
+    border: 1.5px solid #b5845a;
+    background: transparent;
+    cursor: pointer;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1rem; font-style: italic;
+    color: #b5845a;
+    letter-spacing: 0.05em;
+    transition: all 0.28s ease;
+    animation: reveal 0.8s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  .timelock-open-btn:hover {
+    background: rgba(181,132,90,0.10);
+    transform: scale(1.04);
+  }
 </style>
 </head>
 <body>
@@ -285,9 +304,12 @@
     <div class="timelock-floral">🌸 ✦ 🌷 ✦ 🌸</div>
     <div class="timelock-envelope">💌</div>
     <div class="timelock-title">Ada sesuatu untukmu, Nalen</div>
-    <div class="timelock-sub">Surat ini belum bisa dibuka sekarang.<br>Nalen bisa membukanya mulai jam</div>
-    <div class="timelock-time">14.35</div>
-    <div class="timelock-note">— tunggu sebentar ya, adek —</div>
+    <div class="timelock-sub" id="timelock-sub">Surat ini belum bisa dibuka sekarang.<br>Nalen bisa membukanya mulai jam</div>
+    <div class="timelock-time" id="timelock-time">19.45</div>
+    <div class="timelock-note" id="timelock-note">— tunggu sebentar ya, adek —</div>
+    <button class="timelock-open-btn" id="timelock-open-btn" onclick="openLetter()">
+      🌸 &nbsp;Buka Suratnya&nbsp; 🌸
+    </button>
   </div>
 </div>
 
@@ -498,33 +520,52 @@
   progWrap.style.display = 'none';
 
   // ── Time Lock ──
+  // Edit dua baris ini untuk mengubah waktu buka:
+  const UNLOCK_HOUR   = 19;
+  const UNLOCK_MINUTE = 45;
+
+  // Update tampilan jam di overlay secara otomatis
+  const hStr = String(UNLOCK_HOUR).padStart(2, '0');
+  const mStr = String(UNLOCK_MINUTE).padStart(2, '0');
+  document.getElementById('timelock-time').textContent = hStr + '.' + mStr;
+
+  function isUnlocked() {
+    const n = new Date();
+    const nh = n.getHours(), nm = n.getMinutes();
+    return (nh > UNLOCK_HOUR) || (nh === UNLOCK_HOUR && nm >= UNLOCK_MINUTE);
+  }
+
+  function showReadyState() {
+    document.getElementById('timelock-sub').innerHTML = 'Suratnya sudah siap dibuka, Nalen.';
+    document.getElementById('timelock-note').style.display = 'none';
+    document.getElementById('timelock-open-btn').style.display = 'inline-block';
+  }
+
+  function openLetter() {
+    const overlay = document.getElementById('timelock-overlay');
+    overlay.style.transition = 'opacity 0.9s ease';
+    overlay.style.opacity = '0';
+    setTimeout(function() {
+      overlay.style.display = 'none';
+      document.querySelector('.wrapper').style.visibility = 'visible';
+    }, 900);
+  }
+
   (function() {
-    const UNLOCK_HOUR   = 14;
-    const UNLOCK_MINUTE = 35;
-
-    const now     = new Date();
-    const h       = now.getHours();
-    const m       = now.getMinutes();
-    const isReady = (h > UNLOCK_HOUR) || (h === UNLOCK_HOUR && m >= UNLOCK_MINUTE);
-
-    if (!isReady) {
+    if (isUnlocked()) {
+      // Sudah waktunya — tampilkan overlay dengan tombol buka
+      document.getElementById('timelock-overlay').style.display = 'flex';
+      document.querySelector('.wrapper').style.visibility = 'hidden';
+      showReadyState();
+    } else {
+      // Belum waktunya — tampilkan overlay, polling sampai waktunya
       document.getElementById('timelock-overlay').style.display = 'flex';
       document.querySelector('.wrapper').style.visibility = 'hidden';
 
-      // Poll every 10 seconds, unlock the moment the clock hits 14:30
       const check = setInterval(function() {
-        const n  = new Date();
-        const nh = n.getHours();
-        const nm = n.getMinutes();
-        if ((nh > UNLOCK_HOUR) || (nh === UNLOCK_HOUR && nm >= UNLOCK_MINUTE)) {
+        if (isUnlocked()) {
           clearInterval(check);
-          const overlay = document.getElementById('timelock-overlay');
-          overlay.style.transition = 'opacity 1s ease';
-          overlay.style.opacity = '0';
-          setTimeout(function() {
-            overlay.style.display = 'none';
-            document.querySelector('.wrapper').style.visibility = 'visible';
-          }, 1000);
+          showReadyState();
         }
       }, 10000);
     }
