@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Untuk Nalen</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=EB+Garamond:ital,wght@0,400;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208;
+    --ink-light: #3d2e1a;
+    --accent-id: #4a8a5a;
+    --accent-en: #b5845a;
+    --accent-fr: #9070b8;
+    --bg: #faf6f0;
+    --paper: #fffdf9;
+    --shadow: rgba(90,60,30,0.10);
+    --lang-color: #4a8a5a;
+    --lang-soft: rgba(74,138,90,0.10);
+    --lang-line: rgba(74,138,90,0.22);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 3rem 1.5rem;
+    font-family: 'EB Garamond', Georgia, serif;
+  }
+
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 0% 0%, rgba(210,185,155,0.28) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 60% at 100% 100%, rgba(195,210,185,0.22) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 80% 10%, rgba(220,200,175,0.18) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+
+  .petal { position: fixed; pointer-events: none; opacity: 0; animation: drift linear infinite; z-index: 0; }
+  .petal:nth-child(1) { left:5%;  animation-duration:14s; animation-delay:0s;  font-size:.8rem; }
+  .petal:nth-child(2) { left:20%; animation-duration:18s; animation-delay:3s;  font-size:1.1rem; }
+  .petal:nth-child(3) { left:40%; animation-duration:12s; animation-delay:6s;  font-size:.75rem; }
+  .petal:nth-child(4) { left:60%; animation-duration:16s; animation-delay:1s;  font-size:.9rem; }
+  .petal:nth-child(5) { left:75%; animation-duration:13s; animation-delay:8s;  font-size:1rem; }
+  .petal:nth-child(6) { left:90%; animation-duration:19s; animation-delay:4s;  font-size:.85rem; }
+  @keyframes drift {
+    0%   { opacity:0; top:-4%; transform:translateX(0) rotate(0deg); }
+    8%   { opacity:.55; }
+    92%  { opacity:.35; }
+    100% { opacity:0; top:104%; transform:translateX(30px) rotate(300deg); }
+  }
+
+  .wrapper {
+    position: relative; z-index: 1;
+    width: 100%; max-width: 680px;
+    animation: reveal 1.4s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  @keyframes reveal {
+    from { opacity:0; transform:translateY(28px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  .paper {
+    background: var(--paper);
+    border-radius: 2px;
+    box-shadow: 0 1px 3px var(--shadow), 0 8px 32px rgba(90,60,30,0.09), 0 32px 80px rgba(90,60,30,0.06), inset 0 0 0 1px rgba(181,132,90,0.11);
+    padding: 3rem 4rem 4rem;
+    position: relative; overflow: hidden;
+  }
+  .paper::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: repeating-linear-gradient(transparent, transparent 31px, rgba(181,132,90,0.04) 31px, rgba(181,132,90,0.04) 32px);
+    background-size: 100% 32px; background-position: 0 80px; pointer-events: none;
+  }
+  .paper::after {
+    content: ''; position: absolute; top:0; bottom:0; left:3.6rem; width:1px;
+    background: rgba(210,100,100,0.08); pointer-events: none;
+  }
+
+  /* ── Language tabs ── */
+  .lang-tabs {
+    display: flex;
+    justify-content: center;
+    width: fit-content;
+    margin: 0 auto 2.6rem;
+    border: 1.5px solid rgba(181,132,90,0.2);
+    border-radius: 40px;
+    overflow: hidden;
+  }
+
+  .tab-btn {
+    display: flex; align-items: center; gap: 0.45rem;
+    padding: 0.55rem 1.3rem;
+    border: none; background: transparent; cursor: pointer;
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 0.9rem; letter-spacing: 0.04em;
+    color: var(--ink-light); opacity: 0.48;
+    transition: all 0.28s ease; outline: none;
+  }
+  .tab-btn + .tab-btn { border-left: 1px solid rgba(181,132,90,0.18); }
+  .tab-btn:hover { opacity: 0.72; }
+
+  .tab-btn.active.tab-id { opacity:1; font-style:italic; background:rgba(74,138,90,0.10); color:var(--accent-id); }
+  .tab-btn.active.tab-en { opacity:1; font-style:italic; background:rgba(181,132,90,0.10); color:var(--accent-en); }
+  .tab-btn.active.tab-fr { opacity:1; font-style:italic; background:rgba(144,112,184,0.10); color:var(--accent-fr); }
+
+  .tab-flag { font-size: 1.05rem; line-height: 1; }
+
+  /* ── Audio row ── */
+  .audio-row {
+    display: flex; align-items: center; justify-content: center;
+    gap: 0.9rem; margin-bottom: 2.2rem;
+  }
+  .audio-hint {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 0.77rem; font-style: italic;
+    color: var(--ink-light); opacity: 0.5; letter-spacing: 0.05em;
+  }
+  .play-btn {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.38rem 1rem 0.38rem 0.65rem;
+    border-radius: 40px; border: 1.5px solid var(--lang-color);
+    background: transparent; cursor: pointer;
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 0.85rem; color: var(--lang-color);
+    transition: all 0.28s ease; outline: none;
+  }
+  .play-btn:hover { background: var(--lang-soft); transform: scale(1.03); }
+  .play-btn.playing {
+    background: var(--lang-soft);
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  @keyframes pulse-glow {
+    0%,100% { box-shadow: 0 0 0 0 transparent; }
+    50% { box-shadow: 0 0 0 5px var(--lang-soft); }
+  }
+  .play-btn svg { width:16px; height:16px; fill:currentColor; flex-shrink:0; }
+
+  .prog-wrap {
+    width: 80px; height: 2px; overflow: hidden;
+    background: rgba(181,132,90,0.15); border-radius: 1px;
+    display: none;
+  }
+  .prog-fill {
+    height: 100%; width: 0%; border-radius: 1px;
+    background: var(--lang-color); transition: width 0.3s linear;
+  }
+
+  /* ── Letter ── */
+  .floral-header {
+    text-align: center; font-size: 1.25rem;
+    letter-spacing: 10px; opacity: 0.4; margin-bottom: 2rem;
+  }
+  .date-stamp {
+    text-align: right;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 0.8rem; font-style: italic;
+    color: var(--ink-light); opacity: 0.48;
+    margin-bottom: 1.6rem;
+  }
+
+  /* Panels */
+  .lang-panel { display: none; }
+  .lang-panel.active {
+    display: block;
+    animation: fadeSlide 0.5s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  @keyframes fadeSlide {
+    from { opacity:0; transform:translateY(10px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+
+  .greeting {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.55rem; font-style: italic; color: var(--ink);
+    margin-bottom: 2rem;
+    padding-left: 0.9rem;
+    border-left: 3px solid var(--lang-line);
+  }
+
+  .para { margin-bottom: 2rem; font-size: 1.07rem; line-height: 1.92; color: var(--ink); }
+  .panel-id .para { font-family: 'EB Garamond', Georgia, serif; }
+  .panel-en .para { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 1.04rem; }
+  .panel-fr .para { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 0.98rem; line-height: 1.88; }
+
+  .divider {
+    display: flex; align-items: center; gap: 1rem;
+    margin: 1.6rem 0; opacity: 0.2;
+  }
+  .divider::before, .divider::after {
+    content:''; flex:1; height:1px;
+    background: linear-gradient(90deg, transparent, var(--lang-color), transparent);
+  }
+  .divider span { font-size:.5rem; color:var(--lang-color); letter-spacing:3px; }
+
+  .signature-block { margin-top: 2.2rem; }
+  .sig-line { font-size: 0.98rem; color: var(--ink-light); margin-bottom: 0.2rem; }
+  .panel-id .sig-line { font-family: 'EB Garamond', Georgia, serif; }
+  .panel-en .sig-line { font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; }
+  .panel-fr .sig-line { font-family: 'Playfair Display', Georgia, serif; font-style: italic; }
+  .sig-name {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.45rem; color: var(--ink); margin-top: 0.5rem;
+  }
+
+  .floral-footer {
+    text-align: center; margin-top: 2.5rem;
+    font-size: 1rem; letter-spacing: 10px; opacity: 0.3;
+  }
+
+  @media (max-width: 560px) {
+    .paper { padding: 2.2rem 1.6rem 2.8rem; }
+    .paper::after { left: 1.4rem; }
+    .tab-btn { padding: 0.5rem 0.85rem; font-size: 0.82rem; }
+  }
+
+  /* ── Time Lock Overlay ── */
+  #timelock-overlay {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    animation: reveal 1.2s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  #timelock-overlay::before {
+    content: ''; position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 0% 0%, rgba(210,185,155,0.28) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 60% at 100% 100%, rgba(195,210,185,0.22) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .timelock-card {
+    position: relative; z-index: 1;
+    background: var(--paper);
+    border-radius: 2px;
+    box-shadow: 0 1px 3px var(--shadow), 0 8px 32px rgba(90,60,30,0.09), 0 32px 80px rgba(90,60,30,0.06), inset 0 0 0 1px rgba(181,132,90,0.11);
+    padding: 3.5rem 3.5rem;
+    text-align: center;
+    max-width: 420px; width: 90%;
+  }
+  .timelock-floral {
+    font-size: 1.4rem; letter-spacing: 8px; opacity: 0.35;
+    margin-bottom: 1.8rem;
+  }
+  .timelock-envelope {
+    font-size: 3rem; margin-bottom: 1.4rem;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+  }
+  .timelock-title {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.35rem; font-style: italic;
+    color: var(--ink); margin-bottom: 0.9rem;
+  }
+  .timelock-sub {
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 0.95rem; color: var(--ink-light); opacity: 0.6;
+    line-height: 1.7;
+  }
+  .timelock-time {
+    display: inline-block;
+    margin-top: 1.4rem;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 2rem; font-style: italic;
+    color: #b5845a; letter-spacing: 2px;
+  }
+  .timelock-note {
+    margin-top: 1.4rem;
+    font-family: 'EB Garamond', Georgia, serif;
+    font-size: 0.82rem; font-style: italic;
+    color: var(--ink-light); opacity: 0.4;
+  }
+  .timelock-open-btn {
+    display: none;
+    margin-top: 2rem;
+    padding: 0.65rem 2rem;
+    border-radius: 40px;
+    border: 1.5px solid #b5845a;
+    background: transparent;
+    cursor: pointer;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1rem; font-style: italic;
+    color: #b5845a;
+    letter-spacing: 0.05em;
+    transition: all 0.28s ease;
+    animation: reveal 0.8s cubic-bezier(0.22,1,0.36,1) both;
+  }
+  .timelock-open-btn:hover {
+    background: rgba(181,132,90,0.10);
+    transform: scale(1.04);
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Time Lock Overlay ── -->
+<div id="timelock-overlay" style="display:none;">
+  <div class="timelock-card">
+    <div class="timelock-floral">🌸 ✦ 🌷 ✦ 🌸</div>
+    <div class="timelock-envelope">💌</div>
+    <div class="timelock-title">Ada sesuatu untukmu, Nalen</div>
+    <div class="timelock-sub" id="timelock-sub">Surat ini belum bisa dibuka sekarang.<br>Nalen bisa membukanya mulai jam</div>
+    <div class="timelock-time" id="timelock-time">19.45</div>
+    <div class="timelock-note" id="timelock-note">— tunggu sebentar ya, adek —</div>
+    <button class="timelock-open-btn" id="timelock-open-btn" onclick="openLetter()">
+      🌸 &nbsp;Buka Suratnya&nbsp; 🌸
+    </button>
+  </div>
+</div>
+
+<div class="petal">🌸</div>
+<div class="petal">🌷</div>
+<div class="petal">✿</div>
+<div class="petal">🌸</div>
+<div class="petal">❀</div>
+<div class="petal">🌷</div>
+
+<audio id="audio-id" src="https://res.cloudinary.com/dvbztmtae/video/upload/v1772326652/Indonesia_vn.mp3"></audio>
+<audio id="audio-en" src="https://res.cloudinary.com/dvbztmtae/video/upload/v1772326639/Inggris_vn.mp3"></audio>
+<audio id="audio-fr" src="https://res.cloudinary.com/dvbztmtae/video/upload/v1772326649/Prancis_vn.mp3"></audio>
+
+<div class="wrapper">
+  <div class="paper">
+
+    <!-- Language Tabs -->
+    <div class="lang-tabs">
+      <button class="tab-btn tab-id" onclick="switchLang('id')">
+        <span class="tab-flag">🇮🇩</span> Bahasa Indonesia
+      </button>
+      <button class="tab-btn tab-en active" onclick="switchLang('en')">
+        <span class="tab-flag">🇬🇧</span> English
+      </button>
+      <button class="tab-btn tab-fr" onclick="switchLang('fr')">
+        <span class="tab-flag">🇫🇷</span> Français
+      </button>
+    </div>
+
+    <!-- Audio Player -->
+    <div class="audio-row">
+      <span class="audio-hint" id="audio-hint">🔊 Make sure your volume is on —</span>
+      <button class="play-btn" id="play-btn" onclick="toggleAudio()">
+        <svg id="icon-play" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+        <svg id="icon-pause" viewBox="0 0 24 24" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        <span id="play-label">Let me read it for you, Nalen</span>
+      </button>
+      <div class="prog-wrap" id="prog-wrap">
+        <div class="prog-fill" id="prog-fill"></div>
+      </div>
+    </div>
+
+    <div class="floral-header">🌸 ✦ 🌷 ✦ 🌸</div>
+    <div class="date-stamp" id="date-stamp">Yogyakarta, February 27th, 2026</div>
+
+    <!-- ── PANELS ── -->
+
+    <!-- INDONESIA -->
+    <div class="lang-panel panel-id" id="panel-id">
+      <div class="greeting">Untuk adikku tersayang, Nalen,</div>
+
+      <div class="para">Adek, kakak tahu akhir-akhir ini badai di antara kita terasa begitu berguncang keras. Kakak mengguncang duniamu dan kakak akhirnya menyadari bahwa kakak sudah menyakiti orang yang paling kakak sayangi dan itu jadi beban yang kakak pikul dari hari ke hari, Dek. Kakak masih berharap permintaan maaf terdalam kakak bisa menyatukan kembali kepingan-kepingan hatimu yang tersakiti, tapi kakak juga sadar, mungkin seribu kata maaf nggak pernah cukup untuk balikin hati Nalen.</div>
+      <div class="divider"><span>✦ ✦ ✦</span></div>
+
+      <div class="para">Nalen, bunga-bunga ini kakak kirim untuk jadi penanda kecil, De. Sebuah jangkar sederhana untuk meyakinkan hatimu, mengingatkanmu bahwa kakak masih ada di sini dan akan selalu di sini. Orang yang pertama kali Nalen ajak bicara di WhatsApp, 5 Oktober 2025, masih ada di sini. Kakak bukan berjalan di depanmu, bukan pula tertinggal di belakangmu. Kakak ada di sampingmu, Len — memegang erat-erat tangan Nalen, melewati apapun badai yang akan menghadang.</div>
+      <div class="divider"><span>✦ ✦ ✦</span></div>
+
+      <div class="para">Sekarang Nalen, coba, Dek — senyum lihat bunga-bunga ini. Mereka ini dipetik dari tempat yang aman, tapi mereka tetap milih juga untuk mekar. Nah, kayak gitu juga harapan kakak, Len. Kakak begitu merindukan senyum dan suara Nalen yang begitu menyenangkan di WhatsApp kakak. Nalen mau nggak senyum lagi, bicara lagi ke kakak?</div>
+      <div class="divider"><span>✦ ✦ ✦</span></div>
+
+      <div class="para">Dek, semester ini pasti kamu sibuk, kan? Jaga kesehatan ya, banyak minum air putih. Kasih yang terbaik untuk semester ini, Dek. :) Jaga diri baik-baik, ya, Nalendra.</div>
+
+      <div class="signature-block">
+        <div class="sig-line">Dari kakak yang selalu memikirkan Nalen siang dan malam,</div>
+        <div class="sig-name">Kakakmu, A.S.K</div>
+      </div>
+    </div>
+
+    <!-- ENGLISH -->
+    <div class="lang-panel panel-en active" id="panel-en">
+      <div class="greeting">My dearest Nalen,</div>
+
+      <div class="para">Adek, I know the waters have been turbulent lately. I shook your world — and seeing that I've hurt the person I care for the most is a weight I carry every single day. I wish my deepest apologies could mend the heart I've broken, even though I realize that even a thousand words of sorry might never be enough.</div>
+      <div class="divider"><span>✦ ✦ ✦</span></div>
+
+      <div class="para">Nalen, these flowers are just a little anchor to let you know that I'm still and always will be here. The very person that you started to chat with on WhatsApp on October 5th, 2025 is still here — not in front of or behind you, I'm standing by your side, holding your hand through whatever storm comes our way.</div>
+      <div class="divider"><span>✦ ✦ ✦</span></div>
+
+      <div class="para">Now, adek, please look at these flowers. They were plucked from where they were safe, yet they still choose to bloom. Adek, they are waiting for your smile — the way that I've missed your charming smile and voice. Will you?</div>
+      <div class="divider"><span>✦ ✦ ✦</span></div>
+
+      <div class="para">De, this semester will surely keep you busy — take care of yourself, stay hydrated. Give your best for this semester, adek. :) Take care, Nalendra.</div>
+
+      <div class="signature-block">
+        <div class="sig-line">The one who always thinks of you, day and night,</div>
+        <div class="sig-name">Kakakmu, A.S.K</div>
+      </div>
+    </div>
+
+    <!-- FRANÇAIS -->
+    <div class="lang-panel panel-fr" id="panel-fr">
+      <div class="greeting">Ma très chère Nalen,</div>
+
+      <div class="para">Adek, je sais que les eaux ont été agitées ces derniers temps. J'ai ébranlé ton monde — et voir que j'ai blessé la personne qui m'est la plus chère est un poids que je porte chaque jour, sans exception. Je voudrais que mes plus profondes excuses puissent réparer le cœur que j'ai brisé, même si je sais bien qu'un millier de « pardon » ne suffira jamais.</div>
+      <div class="divider"><span>✦ ✦ ✦</span></div>
+
+      <div class="para">Nalen, ces fleurs sont un petit ancre — pour te rappeler que je suis toujours là. La même personne avec qui tu as commencé à écrire sur WhatsApp le 5 octobre 2025 est encore là — non pas devant toi, ni derrière toi, mais à tes côtés, tenant ta main à travers chaque tempête qui vient.</div>
+      <div class="divider"><span>✦ ✦ ✦</span></div>
+
+      <div class="para">Maintenant, adek, regarde ces fleurs. Elles ont été cueillies là où elles étaient en sécurité — et pourtant, elles choisissent encore de fleurir. Adek, elles attendent ton sourire — de la même façon que j'ai manqué ton sourire charmant et ta voix. Le veux-tu bien ?</div>
+      <div class="divider"><span>✦ ✦ ✦</span></div>
+
+      <div class="para">De, ce semestre sera sûrement chargé — prends soin de toi, bois beaucoup d'eau. Donne le meilleur de toi-même ce semestre, adek. :) Prends soin de toi, Nalendra.</div>
+
+      <div class="signature-block">
+        <div class="sig-line">Celui qui pense à toi, jour et nuit,</div>
+        <div class="sig-name">Kakakmu, A.S.K</div>
+      </div>
+    </div>
+
+    <div class="floral-footer">🌸 ✦ 🌷 ✦ 🌸</div>
+
+  </div>
+</div>
+
+<script>
+  const LANGS = {
+    id: { color:'#4a8a5a', soft:'rgba(74,138,90,0.10)', line:'rgba(74,138,90,0.22)', hint:'🔊 Pastikan volume HP-nya ya —', label:'Kakak bacakan', date:'Yogyakarta, 27 Februari 2026' },
+    en: { color:'#b5845a', soft:'rgba(181,132,90,0.10)', line:'rgba(181,132,90,0.22)', hint:'🔊 Make sure your volume is on —', label:'Let me read it for you, Nalen', date:'Yogyakarta, February 27th, 2026' },
+    fr: { color:'#9070b8', soft:'rgba(144,112,184,0.10)', line:'rgba(144,112,184,0.22)', hint:'🔊 Vérifie le volume de ton téléphone —', label:'Je te le lis', date:'Yogyakarta, le 27 février 2026' },
+  };
+
+  const PLAY_PATH  = `<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>`;
+  const PAUSE_PATH = `<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>`;
+
+  let activeLang = 'en';
+
+  const el = id => document.getElementById(id);
+  const audioEls = { id: el('audio-id'), en: el('audio-en'), fr: el('audio-fr') };
+  const playBtn  = el('play-btn');
+  const iconPlay = el('icon-play');
+  const iconPause= el('icon-pause');
+  const playLabel= el('play-label');
+  const progWrap = el('prog-wrap');
+  const progFill = el('prog-fill');
+  const audioHint= el('audio-hint');
+
+  // progress tracking
+  Object.entries(audioEls).forEach(([lang, audio]) => {
+    audio.addEventListener('timeupdate', () => {
+      if (lang === activeLang && audio.duration)
+        progFill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+    });
+    audio.addEventListener('ended', () => {
+      if (lang === activeLang) stopUI();
+    });
+  });
+
+  function stopUI() {
+    playBtn.classList.remove('playing');
+    progWrap.style.display = 'none';
+    progFill.style.width = '0%';
+    iconPlay.style.display  = 'block';
+    iconPause.style.display = 'none';
+  }
+
+  function applyColors(lang) {
+    const c = LANGS[lang];
+    const root = document.documentElement.style;
+    root.setProperty('--lang-color', c.color);
+    root.setProperty('--lang-soft',  c.soft);
+    root.setProperty('--lang-line',  c.line);
+    playBtn.style.borderColor = c.color;
+    playBtn.style.color       = c.color;
+    progFill.style.background = c.color;
+    audioHint.textContent     = c.hint;
+    playLabel.textContent     = c.label;
+    document.getElementById('date-stamp').textContent = c.date;
+  }
+
+  function switchLang(lang) {
+    if (lang === activeLang) return;
+
+    // stop current audio
+    audioEls[activeLang].pause();
+    stopUI();
+
+    activeLang = lang;
+    applyColors(lang);
+
+    // tabs
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.tab-' + lang).classList.add('active');
+
+    // panels — remove active first, then re-add to trigger animation
+    document.querySelectorAll('.lang-panel').forEach(p => p.classList.remove('active'));
+    el('panel-' + lang).classList.add('active');
+  }
+
+  function toggleAudio() {
+    const audio = audioEls[activeLang];
+    if (audio.paused) {
+      Object.entries(audioEls).forEach(([l, a]) => { if (l !== activeLang) { a.pause(); } });
+      audio.play();
+      playBtn.classList.add('playing');
+      progWrap.style.display = 'block';
+      iconPlay.style.display  = 'none';
+      iconPause.style.display = 'block';
+    } else {
+      audio.pause();
+      stopUI();
+    }
+  }
+
+  // boot
+  applyColors('en');
+  progWrap.style.display = 'none';
+
+  // ── Time Lock ──
+  // Edit dua baris ini untuk mengubah waktu buka:
+  const UNLOCK_HOUR   = 19;
+  const UNLOCK_MINUTE = 45;
+
+  // Update tampilan jam di overlay secara otomatis
+  const hStr = String(UNLOCK_HOUR).padStart(2, '0');
+  const mStr = String(UNLOCK_MINUTE).padStart(2, '0');
+  document.getElementById('timelock-time').textContent = hStr + '.' + mStr;
+
+  function isUnlocked() {
+    const n = new Date();
+    const nh = n.getHours(), nm = n.getMinutes();
+    return (nh > UNLOCK_HOUR) || (nh === UNLOCK_HOUR && nm >= UNLOCK_MINUTE);
+  }
+
+  function showReadyState() {
+    document.getElementById('timelock-sub').innerHTML = 'Suratnya sudah siap dibuka, Nalen.';
+    document.getElementById('timelock-note').style.display = 'none';
+    document.getElementById('timelock-open-btn').style.display = 'inline-block';
+  }
+
+  function openLetter() {
+    const overlay = document.getElementById('timelock-overlay');
+    overlay.style.transition = 'opacity 0.9s ease';
+    overlay.style.opacity = '0';
+    setTimeout(function() {
+      overlay.style.display = 'none';
+      document.querySelector('.wrapper').style.visibility = 'visible';
+    }, 900);
+  }
+
+  (function() {
+    if (isUnlocked()) {
+      // Sudah waktunya — tampilkan overlay dengan tombol buka
+      document.getElementById('timelock-overlay').style.display = 'flex';
+      document.querySelector('.wrapper').style.visibility = 'hidden';
+      showReadyState();
+    } else {
+      // Belum waktunya — tampilkan overlay, polling sampai waktunya
+      document.getElementById('timelock-overlay').style.display = 'flex';
+      document.querySelector('.wrapper').style.visibility = 'hidden';
+
+      const check = setInterval(function() {
+        if (isUnlocked()) {
+          clearInterval(check);
+          showReadyState();
+        }
+      }, 10000);
+    }
+  })();
+</script>
+</body>
+</html>
